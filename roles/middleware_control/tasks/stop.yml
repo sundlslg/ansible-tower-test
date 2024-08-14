@@ -1,0 +1,22 @@
+---
+- name: "获取系统中运行的服务信息"
+  service_facts:
+
+- name: "查找正在运行的中间件服务"
+  set_fact:
+    running_middlewares: "{{ middleware_list | selectattr('service_name', 'in', ansible_facts.services.keys()) | list }}"
+
+- name: "获取中间件运行属主"
+  command: "ps -eo user,comm | grep -w {{ item.service_name }} | awk '{print $1}' | sort | uniq"
+  register: middleware_owner
+  with_items: "{{ running_middlewares }}"
+  when: ansible_facts.services[item.service_name].state == 'running'
+
+- name: "停止中间件服务 (以属主身份执行)"
+  become: true
+  become_user: "{{ middleware_owner.stdout }}"
+  service:
+    name: "{{ item.service_name }}"
+    state: stopped
+  with_items: "{{ running_middlewares }}"
+  when: ansible_facts.services[item.service_name].state == 'running'

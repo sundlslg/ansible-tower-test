@@ -1,0 +1,19 @@
+---
+- name: "检查系统补丁"
+  yum:
+    list: updates
+  register: yum_check_output
+  changed_when: false
+
+- name: "收集系统补丁信息"
+  set_fact:
+    before_update_packages: "{{ yum_check_output.results }}"
+
+- name: "生成更新前的CSV报告"
+  template:
+    src: report.csv.j2
+    dest: "{{ report_path }}"
+    mode: '0644'
+  vars:
+    packages: "{{ before_update_packages }}"
+    after_update_packages: []

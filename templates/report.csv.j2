@@ -1,0 +1,7 @@
+Hostname,OS,Update Status,Package
+{% for package in packages %}
+{{ inventory_hostname }},{{ ansible_distribution }} {{ ansible_distribution_version }},Before update,{{ package }}
+{% endfor %}
+{% for package in after_update_packages %}
+{{ inventory_hostname }},{{ ansible_distribution }} {{ ansible_distribution_version }},After update,{{ package }}
+{% endfor %}

@@ -1,0 +1,25 @@
+---
+#Ansible 提示使用专门的 yum 模块来管理包安装和更新操作
+#yum 模块不完全等同于 command: yum，但它已经涵盖了大部分常见的 yum 操作。如果有特定的命令或选项需要运行，而 yum 模块不支持，可以在任务中禁用警告args:  warn: false
+#- name: 收集更新后补丁信息
+#  yum:
+#    list: updates
+#  register: yum_post_check_output
+#  changed_when: false
+
+- name: "收集更新后补丁信息"
+  command: yum list updates
+  register: yum_post_check_output
+  changed_when: false
+
+- name: "更新后的CSV报告"
+  template:
+    src: report.csv.j2
+    dest: "{{ report_path }}"
+  vars:
+    packages: "{{ before_update_packages }}"
+    after_update_packages: "{{ yum_post_check_output.stdout_lines }}"
+
+- name: "输出任务完成信息"
+  debug:
+    msg: "补丁更新已完成，报告保存至 {{ report_path }}"

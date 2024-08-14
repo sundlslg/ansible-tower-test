@@ -1,0 +1,10 @@
+middleware_list:
+  - name: nginx
+    service_name: nginx
+  - name: apache
+    service_name: httpd
+  - name: mysql
+    service_name: mysqld
+
+report_path: "/tmp/patch_report.csv"
+local_report_dir: "/tmp/reports/"

@@ -1,0 +1,14 @@
+---
+- name: "执行系统更新"
+  yum:
+    name: "*"
+    state: latest
+  register: yum_update_output
+
+- name: "重启机器"
+  reboot:
+    reboot_timeout: 300
+
+- name: "检查机器是否重启成功"
+  wait_for_connection:
+    timeout: 300
